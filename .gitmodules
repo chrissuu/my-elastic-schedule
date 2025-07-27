@@ -1,3 +1,6 @@
 [submodule "elastisched"]
 	path = backend/elastisched
 	url = https://github.com/chrissuu/elastisched 
+[submodule "backend/elastisched"]
+	path = backend/elastisched
+	url = https://github.com/chrissuu/elastisched
