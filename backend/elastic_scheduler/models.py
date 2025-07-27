@@ -1,7 +1,8 @@
 from django.db import models
 from django.contrib.postgres.fields import JSONField
 import uuid
-from ..elastisched import Blob
+from ..elastisched.src.elastisched import *
+from ..elastisched.src.elastisched.recurrence import BlobRecurrence
 
 class BlobModel(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -24,4 +25,24 @@ class BlobModel(models.Model):
     def __str__(self):
         return f"BlobModel {self.id}"
     
+class RecurrenceModel(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    data = JSONField()
 
+    def save_recurrence(self, recurrence: BlobRecurrence):
+        """
+        Store the Recurrence into the model.
+        """
+        id = recurrence.id
+        self.id = uuid.UUID(id) if not isinstance(id, uuid.UUID) else id
+        self.data = recurrence.to_dict()
+        self.save()
+
+    def get_recurrence(self):
+        """
+        Return a Recurrence instance from the stored JSON data.
+        """
+        return BlobRecurrence.from_dict(self.data)
+    
+    def __str__(self):
+        return f"RecurrenceModel {self.id}"
