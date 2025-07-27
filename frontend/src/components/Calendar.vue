@@ -10,6 +10,7 @@
 <script>
 import FullCalendar from '@fullcalendar/vue3'
 import dayGridPlugin from '@fullcalendar/daygrid'
+import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
 
 export default {
@@ -20,13 +21,16 @@ export default {
   data() {
     return {
       calendarOptions: {
-        plugins: [dayGridPlugin, interactionPlugin],
+        plugins: [dayGridPlugin, interactionPlugin, timeGridPlugin],
         initialView: 'dayGridMonth',
         headerToolbar: {
           left: 'prev,next today',
           center: 'title',
-          right: 'dayGridMonth,dayGridWeek'
+          right: 'dayGridMonth,timeGridWeek,timeGridDay'
         },
+
+        nowIndicator: true,
+
         events: [
           {
             title: 'Sample Event',
@@ -34,7 +38,12 @@ export default {
           }
         ],
         dateClick: this.handleDateClick,
-        eventClick: this.handleEventClick
+        eventClick: this.handleEventClick,
+
+        // Selection settings
+        selectable: true,
+        selectMirror: true,
+        snapDuration: '00:15:00',
       }
     }
   },
