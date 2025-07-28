@@ -1,48 +1,40 @@
-from django.db import models
-from django.contrib.postgres.fields import JSONField
+# models.py
 import uuid
-from ..elastisched.src.elastisched import *
-from ..elastisched.src.elastisched.recurrence import BlobRecurrence
+from django.db import models
+from django.utils.timezone import get_default_timezone
+
+from .constants import *
+
+class TagModel(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+    group = models.CharField(max_length=50, unique=True)
+
+    def __str__(self):
+        return self.name
 
 class BlobModel(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    data = JSONField()
 
-    def save_blob(self, blob):
-        """
-        Store the blob (instance of your Blob dataclass) into the model.
-        """
-        self.id = uuid.UUID(blob.id) if not isinstance(blob.id, uuid.UUID) else blob.id
-        self.data = blob.to_dict()
-        self.save()
+    name = models.CharField(max_length=100, default="Unnamed Blob")
+    description = models.TextField(blank=True, null=True)
 
-    def get_blob(self):
-        """
-        Return a Blob instance from the stored JSON data.
-        """
-        return Blob.from_dict(self.data)
+    tz = models.CharField(max_length=100, default=str(get_default_timezone()))
+
+    default_start = models.CharField(default=ISOFORMAT_STRLEN)
+    default_end = models.CharField(default=ISOFORMAT_STRLEN)
+
+    schedulable_start = models.CharField(default=ISOFORMAT_STRLEN)
+    schedulable_end = models.CharField(default=ISOFORMAT_STRLEN)
+
+    is_splittable = models.BooleanField(default=False)
+    is_overlappable = models.BooleanField(default=False)
+    is_invisible = models.BooleanField(default=False)
+    max_splits = models.IntegerField(default=0)
+    min_split_duration = models.DurationField(default=0)
+
+    dependencies = models.JSONField(default=list)
+
+    tags = models.ManyToManyField(TagModel, blank=True)
 
     def __str__(self):
-        return f"BlobModel {self.id}"
-    
-class RecurrenceModel(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    data = JSONField()
-
-    def save_recurrence(self, recurrence: BlobRecurrence):
-        """
-        Store the Recurrence into the model.
-        """
-        id = recurrence.id
-        self.id = uuid.UUID(id) if not isinstance(id, uuid.UUID) else id
-        self.data = recurrence.to_dict()
-        self.save()
-
-    def get_recurrence(self):
-        """
-        Return a Recurrence instance from the stored JSON data.
-        """
-        return BlobRecurrence.from_dict(self.data)
-    
-    def __str__(self):
-        return f"RecurrenceModel {self.id}"
+        return self.name
