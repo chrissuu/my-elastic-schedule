@@ -28,7 +28,7 @@ ALLOWED_HOSTS = [
 ]
 
 # Application definition
-
+# Add corsheaders to INSTALLED_APPS
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -37,10 +37,13 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
+    "corsheaders",
     "elastic_scheduler"
 ]
 
+# Add CorsMiddleware at the TOP of MIDDLEWARE
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",  # Add this at the top
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -50,10 +53,26 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-CORS_ALLOWED_ORIGIN = [
-    "http://localhost:5173",  # Vue dev server
+# Uncomment and fix the CORS settings (note: it should be ORIGINS not ORIGIN)
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
     "http://127.0.0.1:5173",
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
 ]
+
+# Optional: For development only, you can use this instead (less secure):
+# CORS_ALLOW_ALL_ORIGINS = True
+
+# Add REST_FRAMEWORK settings
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.AllowAny',
+    ],
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+    ],
+}
 
 ROOT_URLCONF = "backend.urls"
 

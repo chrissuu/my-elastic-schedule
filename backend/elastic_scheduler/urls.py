@@ -3,8 +3,8 @@ from rest_framework.routers import DefaultRouter
 from .views import BlobViewSet
 
 router = DefaultRouter()
-router.register(r'blobs', BlobViewSet)
+router.register(r"blobs", BlobViewSet)
 
 urlpatterns = [
-    path('api/', include(router.urls)),
+    path("api/", include(router.urls)),
 ]
